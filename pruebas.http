@@ -1,0 +1,38 @@
+@url = http://localhost:3005
+
+GET {{url}}
+
+###
+
+# Obtiene todas las tasks
+GET {{url}}/tasks
+
+###
+
+# Obtiene una tarea por id
+GET {{url}}/tasks/12345
+
+###
+
+# Crea una nueva tarea
+POST {{url}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Nueva tarea 3"
+}
+
+###
+
+# Actualiza una tarea existente
+PUT {{url}}/tasks/12345
+Content-Type: application/json
+
+{
+  "title": "Tarea actualizada"
+}
+
+###
+
+# Elimina una tarea por id
+DELETE {{url}}/tasks/12345
