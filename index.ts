@@ -39,19 +39,6 @@ tasksRoutes.get("/", (req, res) => {
   res.send(tasks);
 });
 
-tasksRoutes.get("/:taskId", (req, res) => {
-  const taskId = req.params.taskId;
-  const task = tasks.find((task) => task.id === taskId);
-  // A la hora de enviar una respuesta, debemos tener en cuenta los códigos de HTTP
-  // https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Status
-  // En nuestro caso mandaremos 200 si la encontramos y 404 si no la encontramos
-  if (!task) {
-    res.status(404).send("Task not found");
-    return;
-  }
-  res.send(task);
-});
-
 tasksRoutes.post("/", (req, res) => {
   // Cosas que hay en req que normalmente nos interesan:
   // req.body, req.params, req.query, req.headers, etc.
@@ -64,27 +51,37 @@ tasksRoutes.post("/", (req, res) => {
   res.status(201).send("Tarea creada");
 });
 
-tasksRoutes.put("/:taskId", (req, res) => {
+// ------------------
+const tasksRoutesById = express.Router({ mergeParams: true });
+tasksRoutes.use("/:taskId", tasksRoutesById);
+
+// Middleware: busca la tarea por ID y la adjunta a res.locals
+tasksRoutesById.use((req, res, next) => {
   const taskId = req.params.taskId;
   const task = tasks.find((task) => task.id === taskId);
   if (!task) {
     res.status(404).send("Task not found");
     return;
   }
-  task.title = req.body.title;
+  // locals (en res) es el tipico sitio donde se pueden guardar
+  // cosas para que las reutilicen las rutas que cuelgan de los middlewares
+  res.locals.task = task;
+  next();
+});
+
+
+tasksRoutesById.get("/", (req, res) => {
+  console.log("Tarea encontrada:", res.locals.task);
+  res.send(res.locals.task);
+});
+
+tasksRoutesById.put("/", (req, res) => {
+  res.locals.task.title = req.body.title;
   res.status(200).send("Tarea actualizada");
 });
 
-tasksRoutes.delete("/:taskId", (req, res) => {
-  const taskId = req.params.taskId;
-  const task = tasks.find((task) => task.id === taskId);
-  if (!task) {
-    res.status(404).send("Task not found");
-    return;
-  }
-  const taskIndex = tasks.indexOf(task);
+tasksRoutesById.delete("/", (req, res) => {
+  const taskIndex = tasks.indexOf(res.locals.task);
   tasks.splice(taskIndex, 1);
   res.status(200).send("Eliminar una tarea");
 });
-
-
