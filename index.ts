@@ -61,15 +61,30 @@ tasksRoutes.post("/", (req, res) => {
     title: req.body.title,
   }
   tasks.push(newTask);
-  res.status(201).send("Crear una nueva tarea");
+  res.status(201).send("Tarea creada");
 });
 
 tasksRoutes.put("/:taskId", (req, res) => {
-  res.send("Actualizar una tarea");
+  const taskId = req.params.taskId;
+  const task = tasks.find((task) => task.id === taskId);
+  if (!task) {
+    res.status(404).send("Task not found");
+    return;
+  }
+  task.title = req.body.title;
+  res.status(200).send("Tarea actualizada");
 });
 
 tasksRoutes.delete("/:taskId", (req, res) => {
-  res.send("Eliminar una tarea");
+  const taskId = req.params.taskId;
+  const task = tasks.find((task) => task.id === taskId);
+  if (!task) {
+    res.status(404).send("Task not found");
+    return;
+  }
+  const taskIndex = tasks.indexOf(task);
+  tasks.splice(taskIndex, 1);
+  res.status(200).send("Eliminar una tarea");
 });
 
 
