@@ -9,7 +9,18 @@ type Task = {
   id: string;
   title: string;
 };
-const tasks: Task[] = []
+const tasks: Task[] =   [{
+    "id": "019c7b07-a44b-7000-82ea-64cca9769691",
+    "title": "Nueva tarea 3"
+  },
+  {
+    "id": "019c7b07-b36b-7000-89be-64e7588df5a6",
+    "title": "Nueva tarea 2"
+  },
+  {
+    "id": "019c7b07-bb30-7000-ac0a-2450d224c962",
+    "title": "Nueva tarea 1"
+  }]
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Trello API!");
@@ -28,19 +39,29 @@ tasksRoutes.get("/", (req, res) => {
   res.send(tasks);
 });
 
-tasksRoutes.get("/:id", (req, res) => {
-  res.send("Obtener una tarea por ID");
+tasksRoutes.get("/:taskId", (req, res) => {
+  const taskId = req.params.taskId;
+  const task = tasks.find((task) => task.id === taskId);
+  // A la hora de enviar una respuesta, debemos tener en cuenta los códigos de HTTP
+  // https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Status
+  // En nuestro caso mandaremos 200 si la encontramos y 404 si no la encontramos
+  if (!task) {
+    res.status(404).send("Task not found");
+    return;
+  }
+  res.send(task);
 });
 
 tasksRoutes.post("/", (req, res) => {
   // Cosas que hay en req que normalmente nos interesan:
   // req.body, req.params, req.query, req.headers, etc.
+  // Enviamos estado 201, CREADO
   const newTask = {
     id: randomUUIDv7(),
     title: req.body.title,
   }
   tasks.push(newTask);
-  res.send("Crear una nueva tarea");
+  res.status(201).send("Crear una nueva tarea");
 });
 
 tasksRoutes.put("/:taskId", (req, res) => {

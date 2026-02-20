@@ -10,7 +10,12 @@ GET {{url}}/tasks
 ###
 
 # Obtiene una tarea por id
-GET {{url}}/tasks/12345
+GET {{url}}/tasks/019c7b07-b36b-7000-89be-64e7588df5a6
+
+###
+
+# Obtiene una tarea por id (ERROR)
+GET {{url}}/tasks/019c7b07-b36b-7000-89be-64e7588df5a6222
 
 ###
 
@@ -19,7 +24,7 @@ POST {{url}}/tasks
 Content-Type: application/json
 
 {
-  "title": "Nueva tarea 3"
+  "title": "Nueva tarea 1"
 }
 
 ###
