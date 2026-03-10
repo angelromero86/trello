@@ -1,6 +1,7 @@
 import express from "express";
-import type { Task } from "./src/modules/task/domain/task";
+import type { TaskDTO } from "./src/modules/task/domain/task";
 import { Task_Application } from "./src/modules/task/application/task.application";
+import { TaskValidation_Error } from "./src/modules/task/domain/errors/task.validation.error";
 
 const app = express();
 app.use(express.json());
@@ -26,9 +27,17 @@ tasksRoutes.get("/", async (req, res) => {
   res.send(tasks);
 });
 
-tasksRoutes.post("/", (req, res) => {
-  taskApplication.create(req.body.title);
-  res.status(201).send("Tarea creada");
+tasksRoutes.post("/", async (req, res) => {
+  try {
+    const task = await taskApplication.create(req.body.title);
+    res.status(201).send(task);
+  } catch (error) {
+    if (error instanceof TaskValidation_Error)  {
+      res.status(400).send(error.message);
+    } else {
+      res.status(500).send("Internal server error");
+    }
+  }
 });
 
 // ------------------
@@ -57,13 +66,18 @@ tasksRoutesById.get("/", (req, res) => {
 });
 
 tasksRoutesById.put("/", async (req, res) => {
-  const task: Task = res.locals.task;
-  await taskApplication.update(task, req.body.title);
-  res.status(200).send("Tarea actualizada");
+  try {
+    const task: TaskDTO = res.locals.task;
+    await taskApplication.update(task, req.body.title);
+    res.status(200).send("Tarea actualizada");  
+  } catch (error: any) {
+    res.status(400).send(error.message);
+    return;
+  }
 });
 
 tasksRoutesById.delete("/", async (req, res) => {
-  const task: Task = res.locals.task;
+  const task: TaskDTO = res.locals.task;
   await taskApplication.delete(task);
   res.status(200).send("Eliminar una tarea");
 });

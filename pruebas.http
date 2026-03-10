@@ -24,25 +24,25 @@ POST {{url}}/tasks
 Content-Type: application/json
 
 {
-  "title": "Nueva tarea 1"
+  "title": "Nueva tarea 11"
 }
 
 ###
 
 # Actualiza una tarea existente
-PUT {{url}}/tasks/019c9f36-77ea-7000-9c81-6a015fe0a05e
+PUT {{url}}/tasks/019cd84b-57cb-7000-b4d2-09db91aee3d6
 Content-Type: application/json
 
 {
-  "title": "Tarea actualizada 4"
+  "title": "Tarea actualizada 5"
 }
 
 ###
 
 # Elimina una tarea por id
-DELETE {{url}}/tasks/019c9f36-77ea-7000-9c81-6a015fe0a05e
+DELETE {{url}}/tasks/019c7b07-bb30-7000-ac0a-2450d224c962
 
 ###
 
-# Elimina una tarea por id (ERROR
+# Elimina una tarea por id (ERROR)
 DELETE {{url}}/tasks/019c7b07-bb30-7000-ac0a-2450d224c962278278
