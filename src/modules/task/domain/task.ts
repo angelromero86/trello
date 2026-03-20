@@ -5,6 +5,9 @@ export interface TaskDTO {
   title: string;
 }
 
+export interface UpdateTaskDTO {
+  title?: string;
+}
 
 export class Task {
 
@@ -20,10 +23,17 @@ export class Task {
     return this.data.id;
   }
   
-  change(changes: Partial<Omit<TaskDTO, "id">>) {
+  change(changes: UpdateTaskDTO) {
+    if ((changes as any)['id']) {
+      throw new Error("ID cannot be changed");
+    }
     const updatedData = { ...this.data, ...changes };
     Task_Schema.parse(updatedData);
     this.data = updatedData;
+  }
+
+  toDTO(): TaskDTO {
+    return this.data;
   }
 
 }

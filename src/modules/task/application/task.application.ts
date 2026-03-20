@@ -1,64 +1,56 @@
 import { randomUUIDv7 } from "bun";
-import type { TaskDTO } from "../domain/task";
+import { Task, type TaskDTO, type UpdateTaskDTO } from "../domain/task";
 import type { Task_UseCases } from "../domain/task.use-cases";
 import Task_Schema from "../domain/task.schema";
 import { TaskValidation_Error } from "../domain/errors/task.validation.error";
+import type { Task_Repository } from "../domain/task.repository";
 import { TaskNotFound_Error } from "../domain/errors/task.not-found.error";
 
 export class Task_Application implements Task_UseCases {
 
-    private tasks: TaskDTO[] = [{
-      "id": "019c7b07-a44b-7000-82ea-64cca9769691",
-      "title": "Nueva tarea 1"
-    },
-    {
-      "id": "019c7b07-b36b-7000-89be-64e7588df5a6",
-      "title": "Nueva tarea 2"
-    },
-    {
-      "id": "019c7b07-bb30-7000-ac0a-2450d224c962",
-      "title": "Nueva tarea 3"
-    },
-    {
-      "id": "019c7b07-bb30-7000-ac0a-2450d224c962",
-      "title": "Nueva tarea de ejemplo para actualizar cuando se pueda"
-    }]
+    constructor(private readonly repo: Task_Repository) { }
 
-    find(): Promise<TaskDTO[]> {
-        return Promise.resolve(this.tasks);
+    async find(): Promise<TaskDTO[]> {
+        const tasks = await this.repo.find();
+        return tasks.map(task => task.toDTO());
     }
 
-    findById(taskId: string): Promise<TaskDTO> {
-        const task = this.tasks.find((task) => task.id === taskId);
+    async findById(taskId: string): Promise<TaskDTO> {
+        const [ task ] = await this.repo.find({ ids: [taskId] });
         if (!task) {
-            return Promise.reject(new Error("Task not found"));
+            return Promise.reject(new TaskNotFound_Error());
         }
-        return Promise.resolve(task);
+        return task.toDTO();
     }
   
     async create(title: string): Promise<TaskDTO> {
         try {
-          const newTask = { id: randomUUIDv7(), title }
-          Task_Schema.parse(newTask);
-          this.tasks.push(newTask);
-          return newTask;
+          const task = new Task({ id: randomUUIDv7(), title })
+          await this.repo.create(task);
+          return task.toDTO();
         } catch (error) {
           throw new TaskValidation_Error(error instanceof Error ? error.message : "Unknown validation error");
         }
     }
   
-    async update(taskToUpdate: TaskDTO, title: string): Promise<void> { 
+    async update(taskId: string, changes: UpdateTaskDTO): Promise<void> { 
         try {
-          const updatedTask = { ...taskToUpdate, title };
-          Task_Schema.parse(updatedTask);
-          taskToUpdate.title = title;
+          const [ task ] = await this.repo.find({ ids: [taskId] });
+          if (!task) {
+              return Promise.reject(new TaskNotFound_Error());
+          }
+          task.change(changes);
+          await this.repo.update(task);
         } catch (error) {
           throw new TaskValidation_Error(error instanceof Error ? error.message : "Unknown validation error");
         }
     }
 
-    async delete(taskToDelete: TaskDTO): Promise<void> {
-        this.tasks = this.tasks.filter((task) => task.id !== taskToDelete.id);
-        return Promise.resolve();
+    async delete(taskId: string): Promise<void> {
+        const [ task ] = await this.repo.find({ ids: [taskId] });
+        if (!task) {
+            return Promise.reject(new TaskNotFound_Error());
+        }
+        await this.repo.delete(task);
     }
 }

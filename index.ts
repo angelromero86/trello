@@ -2,12 +2,15 @@ import express from "express";
 import type { TaskDTO } from "./src/modules/task/domain/task";
 import { Task_Application } from "./src/modules/task/application/task.application";
 import { TaskValidation_Error } from "./src/modules/task/domain/errors/task.validation.error";
+import { InMemoryTaskRepository } from "./src/modules/task/infrastructure/inMemoryTaskRepository";
+import { FileTaskRepository } from "./src/modules/task/infrastructure/fileTaskRepository";
 
 const app = express();
 app.use(express.json());
 const port = 3005;
 
-const taskApplication = new Task_Application()
+const taskApplication = new Task_Application(new InMemoryTaskRepository());
+//const taskApplication = new Task_Application(new FileTaskRepository());
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Trello API!");
@@ -68,7 +71,7 @@ tasksRoutesById.get("/", (req, res) => {
 tasksRoutesById.put("/", async (req, res) => {
   try {
     const task: TaskDTO = res.locals.task;
-    await taskApplication.update(task, req.body.title);
+    await taskApplication.update(task.id, { title: req.body.title });
     res.status(200).send("Tarea actualizada");  
   } catch (error: any) {
     res.status(400).send(error.message);
@@ -78,6 +81,6 @@ tasksRoutesById.put("/", async (req, res) => {
 
 tasksRoutesById.delete("/", async (req, res) => {
   const task: TaskDTO = res.locals.task;
-  await taskApplication.delete(task);
+  await taskApplication.delete(task.id);
   res.status(200).send("Eliminar una tarea");
 });

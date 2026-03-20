@@ -10,12 +10,12 @@ GET {{url}}/tasks
 ###
 
 # Obtiene una tarea por id
-GET {{url}}/tasks/019c7b07-a44b-7000-82ea-64cca9769691
+GET {{url}}/tasks/019d0b35-e6f5-7000-a558-5cd5fbdd199d
 
 ###
 
 # Obtiene una tarea por id (ERROR)
-GET {{url}}/tasks/019c7b07-b36b-7000-89be-64e7588df5a6222
+GET {{url}}/tasks/019d0b35-e6f5-7000-a558-5cd5fbdd199d
 
 ###
 
@@ -30,7 +30,7 @@ Content-Type: application/json
 ###
 
 # Actualiza una tarea existente
-PUT {{url}}/tasks/019cd84b-57cb-7000-b4d2-09db91aee3d6
+PUT {{url}}/tasks/019d0b35-e6f5-7000-a558-5cd5fbdd199d
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 ###
 
 # Elimina una tarea por id
-DELETE {{url}}/tasks/019c7b07-bb30-7000-ac0a-2450d224c962
+DELETE {{url}}/tasks/019d0b35-e6f5-7000-a558-5cd5fbdd199d
 
 ###
 
