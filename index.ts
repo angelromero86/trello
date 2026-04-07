@@ -4,13 +4,19 @@ import { Task_Application } from "./src/modules/task/application/task.applicatio
 import { TaskValidation_Error } from "./src/modules/task/domain/errors/task.validation.error";
 import { InMemoryTaskRepository } from "./src/modules/task/infrastructure/inMemoryTaskRepository";
 import { FileTaskRepository } from "./src/modules/task/infrastructure/fileTaskRepository";
+import type { Task_Repository } from "./src/modules/task/domain/task.repository";
 
 const app = express();
 app.use(express.json());
 const port = 3005;
 
-const taskApplication = new Task_Application(new InMemoryTaskRepository());
-//const taskApplication = new Task_Application(new FileTaskRepository());
+let taskRepository: Task_Repository;
+if (process.env.USE_FILE_REPOSITORY === "true") {
+  taskRepository = await FileTaskRepository.createRepository();
+} else {
+  taskRepository = new InMemoryTaskRepository();
+}
+const taskApplication = new Task_Application(taskRepository);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Trello API!");
