@@ -30,7 +30,7 @@ Content-Type: application/json
 ###
 
 # Actualiza una tarea existente
-PUT {{url}}/tasks/019d773c-4645-7000-b750-23360c7b1df6
+PUT {{url}}/tasks/019d7751-2b43-7000-955c-95b5a5d4ba9a
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 ###
 
 # Elimina una tarea por id
-DELETE {{url}}/tasks/019d773c-4645-7000-b750-23360c7b1df6
+DELETE {{url}}/tasks/019d7751-2b43-7000-955c-95b5a5d4ba9a
 
 ###
 

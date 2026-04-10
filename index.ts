@@ -3,16 +3,16 @@ import type { TaskDTO } from "./src/modules/task/domain/task";
 import { Task_Application } from "./src/modules/task/application/task.application";
 import { TaskValidation_Error } from "./src/modules/task/domain/errors/task.validation.error";
 import { InMemoryTaskRepository } from "./src/modules/task/infrastructure/inMemoryTaskRepository";
-import { FileTaskRepository } from "./src/modules/task/infrastructure/fileTaskRepository";
 import type { Task_Repository } from "./src/modules/task/domain/task.repository";
+import { SqliteTaskRepository } from "./src/modules/task/infrastructure/sqliteTaskRepository";
 
 const app = express();
 app.use(express.json());
 const port = 3005;
 
 let taskRepository: Task_Repository;
-if (process.env.USE_FILE_REPOSITORY === "true") {
-  taskRepository = await FileTaskRepository.createRepository();
+if (process.env.USE_SQLITE_REPOSITORY === "true") {
+  taskRepository = SqliteTaskRepository.createRepository();
 } else {
   taskRepository = new InMemoryTaskRepository();
 }
