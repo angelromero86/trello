@@ -41,7 +41,7 @@ tasksRoutes.post("/", async (req, res) => {
     const task = await taskApplication.create(req.body.title);
     res.status(201).send(task);
   } catch (error) {
-    if (error instanceof TaskValidation_Error)  {
+    if (error instanceof TaskValidation_Error) {
       res.status(400).send(error.message);
     } else {
       res.status(500).send("Internal server error");
@@ -57,7 +57,7 @@ tasksRoutes.use("/:taskId", tasksRoutesById);
 tasksRoutesById.use(async (req, res, next) => {
   const taskId = String(req.params.taskId);
   try {
-    const task = await taskApplication.findById(taskId);  
+    const task = await taskApplication.findById(taskId);
     // locals (en res) es el tipico sitio donde se pueden guardar
     // cosas para que las reutilicen las rutas que cuelgan de los middlewares
     res.locals.task = task;
@@ -68,7 +68,6 @@ tasksRoutesById.use(async (req, res, next) => {
   next();
 });
 
-
 tasksRoutesById.get("/", (req, res) => {
   console.log("Tarea encontrada:", res.locals.task);
   res.send(res.locals.task);
@@ -78,7 +77,7 @@ tasksRoutesById.put("/", async (req, res) => {
   try {
     const task: TaskDTO = res.locals.task;
     await taskApplication.update(task.id, { title: req.body.title });
-    res.status(200).send("Tarea actualizada");  
+    res.status(200).send("Tarea actualizada");
   } catch (error: any) {
     res.status(400).send(error.message);
     return;
